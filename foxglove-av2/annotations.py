@@ -17,16 +17,9 @@ from foxglove_schemas_protobuf.SceneEntity_pb2 import SceneEntity
 from foxglove_schemas_protobuf.SceneEntityDeletion_pb2 import SceneEntityDeletion
 from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
 
-from google.protobuf.timestamp_pb2 import Timestamp
 from google.protobuf.duration_pb2 import Duration
 
-from timestamp import make_timestamp
-
-# def make_lane_entity(segment: LaneSegment, timestamp: Timestamp):
-
-
-def protobuf_timestamp_to_timestamp_ns(timestamp: Timestamp) -> int:
-    return timestamp.seconds * 1_000_000_000 + timestamp.nanos
+from timestamp import make_protobuf_timestamp, protobuf_timestamp_to_timestamp_ns
 
 def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
     with open(f"{log_id}-annotations.mcap", "wb") as stream, Writer(stream) as writer:
@@ -46,7 +39,7 @@ def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
             )
             
             all_entities[i] = SceneEntity(
-                timestamp    = make_timestamp(timestamp_ns),
+                timestamp    = make_protobuf_timestamp(timestamp_ns),
                 frame_id     = "base_link",
                 id           = track_uuid,
                 lifetime     = Duration(seconds=0, nanos=0),
@@ -109,7 +102,7 @@ def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
                 color           = Color(r=0.2, g=0.627, b=0.173, a=1)
             )
             map_entities[id] = SceneEntity(
-                timestamp    = make_timestamp(first_sceneupdate_timestamp_ns),
+                timestamp    = make_protobuf_timestamp(first_sceneupdate_timestamp_ns),
                 frame_id     = "map",
                 id           = str(id),
                 lifetime     = Duration(seconds=0, nanos=0), 
@@ -134,7 +127,7 @@ def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
             url   = "https://raw.githubusercontent.com/Daniel-Alp/foxglove-av2/refs/heads/master/mesh/lexus.gltf"
         )
         car_entity = SceneEntity(
-            timestamp    = make_timestamp(first_sceneupdate_timestamp_ns),
+            timestamp    = make_protobuf_timestamp(first_sceneupdate_timestamp_ns),
             frame_id     = "base_link",
             id           = "car",
             lifetime     = Duration(seconds=0, nanos=0),

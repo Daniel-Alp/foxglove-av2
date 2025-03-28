@@ -13,7 +13,7 @@ from foxglove_schemas_protobuf.Pose_pb2 import Pose
 from foxglove_schemas_protobuf.PackedElementField_pb2 import PackedElementField
 from foxglove_schemas_protobuf.PointCloud_pb2 import PointCloud
 
-from timestamp import make_timestamp, get_timestamp_ns
+from timestamp import make_protobuf_timestamp, get_timestamp_ns
 
 def av2_lidar_to_mcap(dataroot: Path, log_id: Path):
     with open(f"{log_id}-lidar.mcap", "wb") as stream, Writer(stream) as writer:
@@ -22,7 +22,7 @@ def av2_lidar_to_mcap(dataroot: Path, log_id: Path):
             data = read_feather(Path(fpath))
 
             timestamp_ns = get_timestamp_ns(fpath)
-            timestamp = make_timestamp(timestamp_ns)
+            timestamp = make_protobuf_timestamp(timestamp_ns)
 
             rows = len(data)
             pt_stride = 12

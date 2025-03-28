@@ -7,7 +7,7 @@ from foxglove_schemas_protobuf.Vector3_pb2 import Vector3
 from foxglove_schemas_protobuf.Quaternion_pb2 import Quaternion
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
 
-from timestamp import make_timestamp
+from timestamp import make_protobuf_timestamp
 
 def av2_pose_to_mcap(dataroot: Path, log_id: Path):
     with open(f"{log_id}-pose.mcap", "wb") as stream, Writer(stream) as writer:
@@ -16,7 +16,7 @@ def av2_pose_to_mcap(dataroot: Path, log_id: Path):
             timestamp_ns, qw, qx, qy, qz, x, y, z = pose
             timestamp_ns = int(timestamp_ns)
 
-            timestamp = make_timestamp(timestamp_ns)
+            timestamp = make_protobuf_timestamp(timestamp_ns)
 
             tf_msg = FrameTransform(
                 timestamp       = timestamp,
