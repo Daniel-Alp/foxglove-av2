@@ -124,7 +124,7 @@ def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
         car_model = ModelPrimitive(
             pose  = Pose(position=Vector3(x=0, y=0, z=0), orientation=Quaternion(x=0, y=0, z=1, w=0)),
             scale = Vector3(x=1, y=1, z=1),   
-            url   = "https://raw.githubusercontent.com/Daniel-Alp/foxglove-av2/refs/heads/master/mesh/car.glb"
+            url   = "https://raw.githubusercontent.com/Daniel-Alp/foxglove-av2/refs/heads/master/mesh/lexus.gltf"
         )
         car_entity = SceneEntity(
             timestamp    = make_protobuf_timestamp(first_sceneupdate_timestamp_ns),
