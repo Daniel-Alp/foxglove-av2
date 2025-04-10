@@ -18,6 +18,7 @@ def av2_camera_to_mcap(dataroot: Path, log_id: Path):
         calibs = read_feather(dataroot / log_id / "calibration/egovehicle_SE3_sensor.feather")
         intrins = read_feather(dataroot / log_id / "calibration/intrinsics.feather")
 
+
         for cam_calib, cam_intrin in zip(calibs.to_numpy(), intrins.to_numpy()):
             id, qw, qx, qy, qz, x, y, z = cam_calib
             _, fx_px, fy_px, cx_px, cy_px, k1, k2, k3, height_px, width_px = cam_intrin
@@ -66,7 +67,13 @@ def av2_camera_to_mcap(dataroot: Path, log_id: Path):
                 publish_time = first_timestamp_ns
             )
 
+            count = 0
+            downsample_rate = 10
+
             for img_fpath in img_fpaths:
+                count += 1
+                if count % downsample_rate != 0:
+                    continue
                 timestamp_ns = fpath_to_timestamp_ns(img_fpath)
                 timestamp = make_protobuf_timestamp(timestamp_ns)
 
@@ -80,7 +87,7 @@ def av2_camera_to_mcap(dataroot: Path, log_id: Path):
                     format    = "jpeg"
                 )
                 writer.write_message(
-                    topic        = f"/camera/{id}/compressed_image",
+                    topic        = f"/camera/{id}/compressed_image_downsampled",
                     message      = img_msg,
                     log_time     = timestamp_ns,
                     publish_time = timestamp_ns
