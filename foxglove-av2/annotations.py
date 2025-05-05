@@ -24,6 +24,28 @@ from google.protobuf.duration_pb2 import Duration
 from timestamp import make_protobuf_timestamp, protobuf_timestamp_to_timestamp_ns
 from args import get_args
 
+def category_to_color(category: str) -> Color:
+    # see https://argoverse.github.io/user-guide/datasets/sensor.html
+    match category:
+        case "REGULAR_VEHICLE":
+            return Color(r=0.39, g=0.87, b=0.09, a=0.6)
+        case "PEDESTRIAN":
+            return Color(r=0.00, g=0.72, b=0.83, a=0.6)
+        case "BOLLARD":
+            return Color(r=0.16, g=0.65, b=0.00, a=0.6)
+        case "CONSTRUCTION_CONE":
+            return Color(r=1.00, g=0.47, b=1.00, a=0.6)
+        case "CONSTRUCTION_BARREL":
+            return Color(r=0.54, g=0.25, b=0.99, a=0.6)
+        case "STOP_SIGN":
+            return Color(r=1.00, g=0.00, b=0.75, a=0.6)
+        case "BICYCLE":
+            return Color(r=1.00, g=0.51, b=0.17, a=0.6)
+        case "LARGE_VEHICLE":
+            return Color(r=1.00, g=0.84, b=0.00, a=0.6)
+        case _:
+            return Color(r=1.00, g=0.65, b=0.00, a=0.6)            
+
 def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
     try:
         with open(f"{log_id}-annotations.mcap", "wb") as stream, Writer(stream) as writer:
@@ -39,7 +61,7 @@ def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
                 cube = CubePrimitive(
                     pose  = Pose(position=Vector3(x=x, y=y, z=z), orientation=Quaternion(x=qx, y=qy, z=qz, w=qw)),
                     size  = Vector3(x=l, y=w, z=h),
-                    color = Color(r=1, g=0.65, b=0, a=0.6),
+                    color = category_to_color(category),
                 )
                 
                 all_entities[i] = SceneEntity(
@@ -128,7 +150,7 @@ def av2_annotations_to_mcap(dataroot: Path, log_id: Path):
             car_model = ModelPrimitive(
                 pose  = Pose(position=Vector3(x=0, y=0, z=0), orientation=Quaternion(x=0, y=0, z=1, w=0)),
                 scale = Vector3(x=1, y=1, z=1),   
-                url   = "https://raw.githubusercontent.com/Daniel-Alp/foxglove-av2/refs/heads/master/mesh/lexus.gltf"
+                url   = "https://raw.githubusercontent.com/Daniel-Alp/foxglove-av2/refs/heads/master/mesh/lexus.glb"
             )
             car_entity = SceneEntity(
                 timestamp    = make_protobuf_timestamp(first_sceneupdate_timestamp_ns),
